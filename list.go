@@ -67,13 +67,13 @@ func Any[T any] (slice []T, predicate func(T) bool) bool {
 }
 
 func Associate[T any, K comparable, V any] (slice []T, transform func(T) (K, V)) map[K]V {
-    dict := make(map[K]V)
-    if transform == nil { return dict }
+    hashMap := make(map[K]V)
+    if transform == nil { return hashMap }
     for _, elem := range slice {
         key, value := transform(elem)
-        dict[key] = value
+        hashMap[key] = value
     }
-    return dict
+    return hashMap
 }
 
 func Contains[T comparable] (slice []T, target T) bool {
@@ -83,17 +83,6 @@ func Contains[T comparable] (slice []T, target T) bool {
         }
     }
     return false
-}
-
-func Count[T any] (slice []T, predicate func(T) bool) int {
-    count := 0
-    if predicate == nil { return count }
-    for _, elem := range slice {
-        if predicate(elem) {
-            count++
-        }
-    }
-    return count
 }
 
 func Drop[T any] (slice []T, index int) []T {
@@ -177,7 +166,6 @@ func ForEach[T any] (slice []T, operation func(T)) {
     }
 }
 
-// sus
 func GroupBy[T any, K comparable] (slice []T, selector func(T) K) map[K][]T {
     groups := make(map[K][]T)
     if selector == nil { return groups }
@@ -280,7 +268,6 @@ func SubList[T any] (slice []T, from, to int) []T {
     return sublist
 }
 
-// sus
 func Zip[T, R any] (a []T, b []R) []*Pair[T, R] {
     zip := []*Pair[T, R]{}
     for i := 0; i <= min(len(a), len(b)); i++ {
