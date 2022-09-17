@@ -8,6 +8,7 @@ import (
 
 func Filter[T any] (slice []T, predicate func(T) bool) []T {
     var filteredSlice = []T{}
+    if predicate == nil { return filteredSlice }
     for _, elem := range slice {
         if predicate(elem) {
             filteredSlice = append(filteredSlice, elem)
@@ -18,6 +19,7 @@ func Filter[T any] (slice []T, predicate func(T) bool) []T {
 
 func FilterIndexed[T any] (slice []T, predicate func(int, T) bool) []T {
     var filteredSlice = []T{}
+    if predicate == nil { return filteredSlice }
     for i, elem := range slice {
         if predicate(i, elem) {
             filteredSlice = append(filteredSlice, elem)
@@ -28,6 +30,7 @@ func FilterIndexed[T any] (slice []T, predicate func(int, T) bool) []T {
 
 func Map[T any, R any] (slice []T, transform func(T) R) []R {
     var transformedSlice = []R{}
+    if transform == nil { return transformedSlice }
     for _, elem := range slice {
         transformedSlice = append(transformedSlice, transform(elem))
     }
@@ -36,6 +39,7 @@ func Map[T any, R any] (slice []T, transform func(T) R) []R {
 
 func MapIndexed[T any, R any] (slice []T, transform func(int, T) R) []R {
     var transformedSlice = []R{}
+    if transform == nil { return transformedSlice }
     for i, elem := range slice {
         transformedSlice = append(transformedSlice, transform(i, elem))
     }
@@ -43,6 +47,7 @@ func MapIndexed[T any, R any] (slice []T, transform func(int, T) R) []R {
 }
 
 func All[T any] (slice []T, predicate func(T) bool) bool {
+    if predicate == nil { return false }
     for _, elem := range slice {
         if !predicate(elem) {
             return false
@@ -52,6 +57,7 @@ func All[T any] (slice []T, predicate func(T) bool) bool {
 } 
 
 func Any[T any] (slice []T, predicate func(T) bool) bool {
+    if predicate == nil { return false }
     for _, elem := range slice {
         if predicate(elem) {
             return true
@@ -62,6 +68,7 @@ func Any[T any] (slice []T, predicate func(T) bool) bool {
 
 func Associate[T any, K comparable, V any] (slice []T, transform func(T) (K, V)) map[K]V {
     dict := make(map[K]V)
+    if transform == nil { return dict }
     for _, elem := range slice {
         key, value := transform(elem)
         dict[key] = value
@@ -80,6 +87,7 @@ func Contains[T comparable] (slice []T, target T) bool {
 
 func Count[T any] (slice []T, predicate func(T) bool) int {
     count := 0
+    if predicate == nil { return count }
     for _, elem := range slice {
         if predicate(elem) {
             count++
@@ -98,13 +106,13 @@ func Drop[T any] (slice []T, index int) []T {
 }
 
 func First[T any] (slice []T, predicate func(T) bool) (T, error) {
+    if predicate == nil { return zero[T](), errors.New("nil function pointer passed")}
     for _, elem := range slice {
         if predicate(elem) {
             return elem, nil
         }
     }
-    var zero T
-    return zero, errors.New("No element found satisfying predicate")
+    return zero[T](), errors.New("No element found satisfying predicate")
 }
 
 func FirstOrDefault[T any] (slice []T, defaultValue T, predicate func(T) bool) T {
@@ -127,6 +135,7 @@ func Flatten[T any] (slices [][]T) []T {
 
 func Fold[T any, R any] (slice []T, initial R, operation func(T, R) R) R {
     accumulator := initial
+    if operation == nil { return accumulator }
     for _, elem := range slice {
         accumulator = operation(elem, accumulator)
     }
@@ -135,6 +144,7 @@ func Fold[T any, R any] (slice []T, initial R, operation func(T, R) R) R {
 
 func FoldIndexed[T any, R any] (slice []T, initial R, operation func(int, T, R) R) R {
     accumulator := initial
+    if operation == nil { return accumulator }
     for i, elem := range slice {
         accumulator = operation(i, elem, accumulator)
     }
@@ -143,6 +153,7 @@ func FoldIndexed[T any, R any] (slice []T, initial R, operation func(int, T, R) 
 
 func FoldRight[T any, R any] (slice []T, initial R, operation func(T, R) R) R {
     accumulator := initial
+    if operation == nil { return accumulator }
     for i := len(slice) - 1; i >= 0; i-- {
         accumulator = operation(slice[i], accumulator)
     }
@@ -152,6 +163,7 @@ func FoldRight[T any, R any] (slice []T, initial R, operation func(T, R) R) R {
 
 func FoldRightIndexed[T any, R any] (slice []T, initial R, operation func(int, T, R) R) R {
     accumulator := initial
+    if operation == nil { return accumulator }
     for i := len(slice) - 1; i >= 0; i-- {
         accumulator = operation(i, slice[i], accumulator)
     }
@@ -159,6 +171,7 @@ func FoldRightIndexed[T any, R any] (slice []T, initial R, operation func(int, T
 }
 
 func ForEach[T any] (slice []T, operation func(T)) {
+    if operation == nil { return }
     for _, elem := range slice {
         operation(elem)
     }
@@ -167,6 +180,7 @@ func ForEach[T any] (slice []T, operation func(T)) {
 // sus
 func GroupBy[T any, K comparable] (slice []T, selector func(T) K) map[K][]T {
     groups := make(map[K][]T)
+    if selector == nil { return groups }
     for _, elem := range slice {
         groups[selector(elem)] = append(groups[selector(elem)], elem)
     }
@@ -184,8 +198,7 @@ func IndexOf[T comparable] (slice []T, target T) int {
 
 func MaxOf[T constraints.Ordered] (slice []T) (T, error) {
     if (len(slice) == 0) {
-        var zero T
-        return zero, nil
+        return zero[T](), errors.New("Slice is empty")
     }
     maxElem := slice[0]
     for _, elem := range slice {
@@ -195,9 +208,8 @@ func MaxOf[T constraints.Ordered] (slice []T) (T, error) {
 }
 
 func MaxOfBy[T any] (slice []T, comparer func(T, T) int) (T, error) {
-    if (len(slice) == 0) {
-        var zero T
-        return zero, nil
+    if (len(slice) == 0 || comparer == nil) {
+        return zero[T](), errors.New("Either slice is empty or comparer is nil")
     }
     maxElem := slice[0]
     for _, elem := range slice {
@@ -211,8 +223,7 @@ func MaxOfBy[T any] (slice []T, comparer func(T, T) int) (T, error) {
 
 func MinOf[T constraints.Ordered] (slice []T) (T, error) {
     if (len(slice) == 0) {
-        var zero T
-        return zero, nil
+        return zero[T](), errors.New("Slice is empty")
     }
     maxElem := slice[0]
     for _, elem := range slice {
@@ -222,9 +233,8 @@ func MinOf[T constraints.Ordered] (slice []T) (T, error) {
 }
 
 func MinOfBy[T any] (slice []T, comparer func(T, T) int) (T, error) {
-    if (len(slice) == 0) {
-        var zero T
-        return zero, nil
+    if (len(slice) == 0 || comparer == nil) {
+        return zero[T](), errors.New("Either slice is empty or comparer is nil")
     }
     maxElem := slice[0]
     for _, elem := range slice {
@@ -238,6 +248,7 @@ func MinOfBy[T any] (slice []T, comparer func(T, T) int) (T, error) {
 func Partition[T any] (slice []T, predicate func(T) bool) ([]T, []T) {
     left :=  []T{}
     right :=  []T{}
+    if predicate == nil { return left, right }
 
     for _, elem := range slice {
         if predicate(elem) {
@@ -270,11 +281,10 @@ func SubList[T any] (slice []T, from, to int) []T {
 }
 
 // sus
-func Zip[T any] (a []T, b []T) [][]T {
-    lenght := min(len(a), len(b))
-    zip := make([][]T, lenght)
-    for i := 0; i <= lenght; i++ {
-        zip = append(zip, []T{a[i], b[i]})
+func Zip[T, R any] (a []T, b []R) []*Pair[T, R] {
+    zip := []*Pair[T, R]{}
+    for i := 0; i <= min(len(a), len(b)); i++ {
+        zip = append(zip, &Pair[T, R]{a[i], b[i]})
     }
     return zip
 }
@@ -292,4 +302,9 @@ func min[T constraints.Ordered] (a, b T) T {
         return a
     }
     return b
+}
+
+func zero[T any]() T {
+    var v T
+    return v
 }
