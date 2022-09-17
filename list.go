@@ -26,10 +26,18 @@ func FilterIndexed[T any] (slice []T, predicate func(int, T) bool) []T {
     return filteredSlice
 }
 
-func Fmap[T any, R any] (slice []T, transform func(T) R) []R {
+func Map[T any, R any] (slice []T, transform func(T) R) []R {
     var transformedSlice = []R{}
     for _, elem := range slice {
         transformedSlice = append(transformedSlice, transform(elem))
+    }
+    return transformedSlice 
+}
+
+func MapIndexed[T any, R any] (slice []T, transform func(int, T) R) []R {
+    var transformedSlice = []R{}
+    for i, elem := range slice {
+        transformedSlice = append(transformedSlice, transform(i, elem))
     }
     return transformedSlice 
 }
@@ -148,6 +156,12 @@ func FoldRightIndexed[T any, R any] (slice []T, initial R, operation func(int, T
         accumulator = operation(i, slice[i], accumulator)
     }
     return accumulator
+}
+
+func ForEach[T any] (slice []T, operation func(T)) {
+    for _, elem := range slice {
+        operation(elem)
+    }
 }
 
 // sus
