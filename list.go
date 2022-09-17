@@ -166,6 +166,13 @@ func ForEach[T any] (slice []T, operation func(T)) {
     }
 }
 
+func ForEachIndexed[T any] (slice []T, operation func(int, T)) {
+    if operation == nil { return }
+    for i, elem := range slice {
+        operation(i, elem)
+    }
+}
+
 func GroupBy[T any, K comparable] (slice []T, selector func(T) K) map[K][]T {
     groups := make(map[K][]T)
     if selector == nil { return groups }
