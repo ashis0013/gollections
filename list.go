@@ -257,7 +257,7 @@ func Partition[T any] (slice []T, predicate func(T) bool) ([]T, []T) {
 
 func Reversed[T any] (slice []T) []T {
     reversed := []T{}
-    for i := len(slice) - 1; i <= 0; i-- {
+    for i := len(slice) - 1; i >= 0; i-- {
         reversed = append(reversed, slice[i])
     }
     return reversed
@@ -277,7 +277,7 @@ func SubList[T any] (slice []T, from, to int) []T {
 
 func Zip[T, R any] (a []T, b []R) []*Pair[T, R] {
     zip := []*Pair[T, R]{}
-    for i := 0; i <= min(len(a), len(b)); i++ {
+    for i := 0; i < min(len(a), len(b)); i++ {
         zip = append(zip, &Pair[T, R]{a[i], b[i]})
     }
     return zip
