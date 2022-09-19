@@ -56,12 +56,13 @@ func MapIndexed[T any, R any] (slice []T, transform func(int, T) R) []R {
 
 //Returns true if all elements satisfy the given predicate
 func All[T any] (slice []T, predicate func(T) bool) bool {
-    if predicate == nil { return false }
+    if predicate == nil || len(slice) == 0 { return false }
     return len(Filter(slice, predicate)) == len(slice)
 } 
 
 //Returns true if any one of elements satisfy the given predicate
 func Any[T any] (slice []T, predicate func(T) bool) bool {
+    if predicate == nil || len(slice) == 0 { return false }
     return len(Filter(slice, predicate)) > 0
 }
 
