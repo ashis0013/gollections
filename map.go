@@ -50,11 +50,9 @@ func GetOrDefault[K comparable, V any] (hashMap map[K]V, key K, defaultVal V) V 
 // Filter keys based on the given predicate
 func FilterKeys[K comparable, V any] (hashMap map[K]V, predicate func(K) bool) map[K]V {
     filtered := make(map[K]V)
-    for key, value := range hashMap {
-        if predicate(key) {
-            filtered[key] = value
-        }
-    }
+    ForEach(Filter(Keys(hashMap), predicate), func(key K) {
+        filtered[key] = hashMap[key]
+    })
     return filtered
 }
 

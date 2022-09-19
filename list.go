@@ -57,23 +57,12 @@ func MapIndexed[T any, R any] (slice []T, transform func(int, T) R) []R {
 //Returns true if all elements satisfy the given predicate
 func All[T any] (slice []T, predicate func(T) bool) bool {
     if predicate == nil { return false }
-    for _, elem := range slice {
-        if !predicate(elem) {
-            return false
-        }
-    }
-    return true
+    return len(Filter(slice, predicate)) == len(slice)
 } 
 
 //Returns true if any one of elements satisfy the given predicate
 func Any[T any] (slice []T, predicate func(T) bool) bool {
-    if predicate == nil { return false }
-    for _, elem := range slice {
-        if predicate(elem) {
-            return true
-        }
-    }
-    return false
+    return len(Filter(slice, predicate)) > 0
 }
 
 // Returns a map generated from the given slice, using the given transform
@@ -89,12 +78,7 @@ func Associate[T any, K comparable, V any] (slice []T, transform func(T) (K, V))
 
 // Returns whether the given slice contains the given target value
 func Contains[T comparable] (slice []T, target T) bool {
-    for _, elem := range slice {
-        if elem == target {
-            return true
-        }
-    }
-    return false
+    return len(Filter(slice, func(x T) bool { return x == target })) > 0
 }
 
 // Drops the value from the given slice at index and returns.
@@ -112,10 +96,8 @@ func Drop[T any] (slice []T, index int) []T {
 // Raises error if there is no such element
 func First[T any] (slice []T, predicate func(T) bool) (T, error) {
     if predicate == nil { return zero[T](), errors.New("nil function pointer passed")}
-    for _, elem := range slice {
-        if predicate(elem) {
-            return elem, nil
-        }
+    if filtered := Filter(slice, predicate); len(filtered) > 0 {
+        return filtered[0], nil
     }
     return zero[T](), errors.New("No element found satisfying predicate")
 }
@@ -283,18 +265,9 @@ func MinOfBy[T any] (slice []T, comparer func(T, T) int) (T, error) {
 // The left slice contains the elements that satisfies predicate 
 // and the right one contains the elements that does not.
 func Partition[T any] (slice []T, predicate func(T) bool) ([]T, []T) {
-    left := []T{}
-    right := []T{}
-    if predicate == nil { return left, right }
+    if predicate == nil { return []T{}, []T{} }
 
-    for _, elem := range slice {
-        if predicate(elem) {
-            left = append(left, elem)
-        } else {
-            right = append(right, elem)
-        }
-    }
-    return left, right
+    return Filter(slice, predicate), Filter(slice, func(x T) bool { return !predicate(x) })
 }
 
 // Returns the elements in reversed oreder
