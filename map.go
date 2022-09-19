@@ -1,10 +1,12 @@
 package gollections
 
+// Pair that contains two generic elements
 type Pair[T, R any] struct {
     First T
     Second R
 }
 
+// Returns a slice key, value pair
 func Entries[K comparable, V any] (hashMap map[K]V) []*Pair[K, V] {
     entries := []*Pair[K, V]{}
     for key, value := range hashMap {
@@ -13,6 +15,7 @@ func Entries[K comparable, V any] (hashMap map[K]V) []*Pair[K, V] {
     return entries
 }
 
+// Returns the slice of all keys
 func Keys[K comparable, V any] (hashMap map[K]V) []K {
     keys := []K{}
     for key := range hashMap {
@@ -21,6 +24,7 @@ func Keys[K comparable, V any] (hashMap map[K]V) []K {
     return keys
 }
 
+// Returns the slice of all values
 func Values[K comparable, V any] (hashMap map[K]V) []V {
     values := []V{}
     for _, value := range hashMap {
@@ -29,11 +33,13 @@ func Values[K comparable, V any] (hashMap map[K]V) []V {
     return values
 }
 
+// Returns whether the map contains the key
 func ContainsKey[K comparable, V any] (hashMap map[K]V, target K) bool {
     _, found := hashMap[target]
     return found
 }
 
+// Get the value corresponding to the key, returns default value if the key is not there.
 func GetOrDefault[K comparable, V any] (hashMap map[K]V, key K, defaultVal V) V {
     if value, found := hashMap[key]; found {
         return value
@@ -41,6 +47,7 @@ func GetOrDefault[K comparable, V any] (hashMap map[K]V, key K, defaultVal V) V 
     return defaultVal
 }
 
+// Filter keys based on the given predicate
 func FilterKeys[K comparable, V any] (hashMap map[K]V, predicate func(K) bool) map[K]V {
     filtered := make(map[K]V)
     for key, value := range hashMap {
@@ -51,6 +58,7 @@ func FilterKeys[K comparable, V any] (hashMap map[K]V, predicate func(K) bool) m
     return filtered
 }
 
+// Maps the map into a slice based on the given transform
 func FlatMap[K comparable, V, R any] (hashMap map[K]V, transform func(K, V) R) []R {
     slice := []R{}
     for key, value := range hashMap {
@@ -59,6 +67,7 @@ func FlatMap[K comparable, V, R any] (hashMap map[K]V, transform func(K, V) R) [
     return slice
 }
 
+// Runs operation on each entry of the map
 func ForEachEntry[K comparable, V any] (hashMap map[K]V, operation func(K, V)) {
     for key, value := range hashMap {
         operation(key, value)
