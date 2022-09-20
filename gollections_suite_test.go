@@ -10,6 +10,7 @@ import (
 var (
 	// Declarations for Ginkgo/GoMega DSL
 	BeforeEach     = ginkgo.BeforeEach
+    BeEquivalentTo = gomega.BeEquivalentTo
 	BeNil          = gomega.BeNil
     BeFalse        = gomega.BeFalse
     BeTrue         = gomega.BeTrue

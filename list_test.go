@@ -1,6 +1,10 @@
 package gollections_test
 
-import . "github.com/ashis0013/gollections"
+import (
+	"fmt"
+
+	. "github.com/ashis0013/gollections"
+)
 
 var _ = Describe("Tests for list utilities", func() {
 
@@ -123,6 +127,37 @@ var _ = Describe("Tests for list utilities", func() {
         })
     })
 
+    Context("FoldIndexed()", func() {
+        It("Should reduce the list as per the operation", func() {
+            Expect(FoldIndexed(list, 0, func(i, a, b int) int { return a+b-i })).Should(Equal(5))
+            Expect(FoldIndexed(list, 0, nil)).Should(Equal(0))
+        })
+    })
+
+    Context("FoldRight()", func() {
+        It("Should reduce the list from right to left", func() {
+            callback := func(a int, b string) string {
+                return fmt.Sprintf("%s%d", b, a)
+            }
+
+            Expect(FoldRight(list, "", callback)).Should(Equal("54321"))
+            Expect(FoldRight([]int{}, "", callback)).Should(Equal(""))
+            Expect(FoldRight(list, "", nil)).Should(Equal(""))
+        })
+    })
+
+    Context("FoldRightIndexed()", func() {
+        It("Should reduce the list from right to left", func() {
+            callback := func(i, a int, b string) string {
+                return fmt.Sprintf("%s%d", b, a-i)
+            }
+
+            Expect(FoldRightIndexed(list, "", callback)).Should(Equal("11111"))
+            Expect(FoldRightIndexed([]int{}, "", callback)).Should(Equal(""))
+            Expect(FoldRightIndexed(list, "", nil)).Should(Equal(""))
+        })
+    })
+
     Context("ForEach()", func() {
         It("Should behave like ForEach :)", func() {
             length := 0
@@ -155,6 +190,74 @@ var _ = Describe("Tests for list utilities", func() {
         It("Should return index of target element, -1 if not fount", func() {
             Expect(IndexOf(list, 3)).Should(Equal(2))
             Expect(IndexOf(list, 8)).Should(Equal(-1))
+        })
+    })
+
+    Context("MaxOf()", func() {
+        It("Should return the maximum of a list", func() {
+            ans, err := MaxOf(list)
+            Expect(ans).Should(Equal(5))
+            Expect(err).Should(BeNil())
+
+            ans, err = MaxOf[int](nil)
+            Expect(err).ShouldNot(BeNil())
+        })
+    })
+
+    Context("MaxOfBy()", func() {
+        It("Should return the maximum according to the comparer function", func() {
+            callback := func(a, b string) int {
+                return len(a) - len(b)
+            }
+            ans, err := MaxOfBy([]string{"a", "abc", "ab"}, callback)
+            Expect(ans).Should(Equal("abc"))
+            Expect(err).Should(BeNil())
+
+            ans, err = MaxOfBy(nil, callback)
+            Expect(err).ShouldNot(BeNil())
+
+            ans, err = MaxOfBy([]string{}, nil)
+            Expect(err).ShouldNot(BeNil())
+        })
+    })
+
+    Context("MinOf()", func() {
+        It("Should return the minimum of a list", func() {
+            ans, err := MinOf(list)
+            Expect(ans).Should(Equal(1))
+            Expect(err).Should(BeNil())
+
+            ans, err = MinOf[int](nil)
+            Expect(err).ShouldNot(BeNil())
+        })
+    })
+
+    Context("MinOfBy()", func() {
+        It("Should return the maximum according to the comparer function", func() {
+            callback := func(a, b string) int {
+                return len(a) - len(b)
+            }
+            ans, err := MinOfBy([]string{"a", "abc", "ab"}, callback)
+            Expect(ans).Should(Equal("a"))
+            Expect(err).Should(BeNil())
+
+            ans, err = MinOfBy(nil, callback)
+            Expect(err).ShouldNot(BeNil())
+
+            ans, err = MinOfBy([]string{}, nil)
+            Expect(err).ShouldNot(BeNil())
+        })
+    })
+
+    Context("Partition()", func() {
+        It("Should partition the list into two list based on the predicate", func() {
+            left, right := Partition(list, func(x int) bool { return x%2 == 0 })
+            Expect(left).Should(Equal([]int{2, 4}))
+            Expect(right).Should(Equal([]int{1, 3, 5}))
+
+            left, right = Partition(list, nil)
+            Expect(len(left)).Should(Equal(0))
+            Expect(len(right)).Should(Equal(0))
         })
     })
 
