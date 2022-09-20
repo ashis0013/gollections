@@ -59,6 +59,7 @@ func FilterKeys[K comparable, V any] (hashMap map[K]V, predicate func(K) bool) m
 // Maps the map into a slice based on the given transform
 func FlatMap[K comparable, V, R any] (hashMap map[K]V, transform func(K, V) R) []R {
     slice := []R{}
+    if hashMap == nil || transform == nil { return slice }
     for key, value := range hashMap {
         slice = append(slice, transform(key, value))
     }
@@ -67,6 +68,7 @@ func FlatMap[K comparable, V, R any] (hashMap map[K]V, transform func(K, V) R) [
 
 // Runs operation on each entry of the map
 func ForEachEntry[K comparable, V any] (hashMap map[K]V, operation func(K, V)) {
+    if hashMap == nil || operation == nil { return }
     for key, value := range hashMap {
         operation(key, value)
     }
